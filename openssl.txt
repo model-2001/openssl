@@ -1,0 +1,26 @@
+
+AES:
+openssl enc -aes-128-cbc -e -in plain.txt -out cipher_cbc.bin -k "123" -nosalt
+certutil -encodehex cipher_cbc.bin cipher_cbc_hex.txt 4
+ecb
+cfb
+ofb
+ctr
+
+RSA:
+echo Hello RSA > plain.txt
+type plain.txt
+openssl genrsa -out pvtkey.pem 2048
+openssl rsa -pubout -in pvtkey.pem -out pub.pem
+openssl pkeyutl -encrypt -pubin -inkey pub.pem -in plain.txt -out cipher.bin -pkeyopt rsa_padding_mode:oaep
+certutil -encodehex cipher.bin cipher_hex.txt 4
+type cipher_hex.txt
+openssl pkeyutl -decrypt -inkey pvtkey.pem -in cipher.bin -out decrypted.txt -pkeyopt rsa_padding_mode:oaep
+type decrypted.txt
+
+DSS:
+openssl genrsa -out pvtkey.pem 2048
+openssl rsa -pubout -in pvtkey.pem -out pub.pem
+
+open ssl dgst -sha256 -sign pvtkey.pem -out signature.bin plain.txt
+openssl dgst -sha256 -verify pub.pem -signature signature.bin plain.txt
