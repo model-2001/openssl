@@ -24,3 +24,17 @@ openssl rsa -pubout -in pvtkey.pem -out pub.pem
 
 open ssl dgst -sha256 -sign pvtkey.pem -out signature.bin plain.txt
 openssl dgst -sha256 -verify pub.pem -signature signature.bin plain.txt
+
+
+Dual dss:
+```cmd
+echo Payment: Rs.2500 > payment.txt
+echo Order: Laptop > order.txt
+openssl genrsa -out pvtkey.pem 2048
+openssl rsa -in pvtkey.pem -pubout -out pub.pem
+openssl dgst -sha256 -binary payment.txt > payment.hash
+openssl dgst -sha256 -binary order.txt > order.hash
+copy /b payment.hash+order.hash dual_input.bin
+openssl dgst -sha256 -sign pvtkey.pem -out dual_signature.bin dual_input.bin
+openssl dgst -sha256 -verify pub.pem -signature dual_signature.bin dual_input.bin
+```
